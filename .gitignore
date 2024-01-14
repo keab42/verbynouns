@@ -128,3 +128,5 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+rawdumps/kaikki_dot_org-dictionary-English-by-pos-noun.json
+rawdumps/kaikki_dot_org-dictionary-English-by-pos-verb.json
