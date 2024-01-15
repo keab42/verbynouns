@@ -37,9 +37,15 @@ function sillifyVerb(verbInfo) {
     var sillyVerb = presentParticiple.replace(/ing$/g, "y");
     sillyVerb = sillyVerb.replace(/yy$/g, "y");
 
+    const sillyVerbInfo = {
+        verb: verbInfo.word,
+        presentParticiple: presentParticiple,
+        sillyVerb: sillyVerb
+    };
+
     console.log(`${verbInfo.word} => ${presentParticiple} => ${sillyVerb}`);
 
-    return sillyVerb
+    return sillyVerbInfo;
 }
 
 async function getRandomNoun() {
@@ -78,32 +84,39 @@ async function readJSONFromFile(filepath) {
     return JSON.parse(data);
 }
 
-async function generateVerbyNoun() {
-    const verb = await getRandomVerb();
+async function generateVerbyNounMessages() {
+    const verbInfo = await getRandomVerb();
     const noun = await getRandomNoun();
 
-    const tootText = capitalize.words(`${verb} ${noun}`);
+    const tootText = capitalize.words(`${verbInfo.sillyVerb} ${noun}`);
+    const replyText = capitalize.words(`${verbInfo.verb} => ${verbInfo.presentParticiple} => ${verbInfo.sillyVerb}`);
 
-    console.log(tootText);
-    return tootText;
+    const messages = {
+        mainMessage: tootText,
+        verbChain: replyText
+    };
+
+    console.log(messages);
+    return messages;
 }
 
-async function toot(message) {
+async function toot(messages) {
     const client = masto.createRestAPIClient({
       url: process.env.URL,
       accessToken: process.env.TOKEN,
     });
 
     const status = await client.v1.statuses.create({
-      status: message,
+      status: messages.mainMessage,
       visibility: "public",
     });
 
     console.log(status.url);
+
 }
 
 async function start() {
-    const message = await generateVerbyNoun();
+    const message = await generateVerbyNounMessages();
     toot(message);
 }
 
