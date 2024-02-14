@@ -1,5 +1,6 @@
 const verbsFolder = './verbs/';
 const nounsFolder = './nouns/';
+const errorLog = "error-log.txt";
 
 const capitalize = require('capitalize');
 require('dotenv').config();
@@ -23,8 +24,8 @@ async function getRandomVerb() {
 }
 
 function sillifyVerb(verbInfo) {
-    
-    let presentParticiple = "";
+
+    var presentParticiple = "";
 
     for (form of verbInfo.forms) {
         const tags = form.tags;
@@ -65,6 +66,7 @@ async function getAllFilesFromFolder(filepath) {
     const files = await fs.promises.readdir(filepath, (err, files) => {
         if (err) {
             console.error(err);
+            logError(err);
             return Error(err);
         }
     });
@@ -76,6 +78,7 @@ async function readJSONFromFile(filepath) {
     const data = await fs.promises.readFile(filepath, "utf8", (err, data) => {
         if (err) {
             console.error(err);
+            logError(err);
             return;
         }
 
@@ -118,6 +121,17 @@ async function toot(messages) {
 async function start() {
     const message = await generateVerbyNounMessages();
     toot(message);
+}
+
+async function logError(message) {
+    var message = `${new Date().toLocaleString()}: ${err}`;
+    fs.appendFile(errorLog, message, err => {
+      if (err) {
+        console.error(err);
+      } else {
+        // done!
+      }
+    });
 }
 
 start();
